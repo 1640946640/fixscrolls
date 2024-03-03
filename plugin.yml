@@ -1,0 +1,8 @@
+name: FixScrolls
+main: net.qq1640946640.custom.fixscrolls.FS
+version: 1.0
+author: qq1640946640
+
+commands:
+  fixscroll:
+    description: main access command to plugin
