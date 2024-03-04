@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: net.qq1640946640.custom.fixscrolls.FS
-
