@@ -13,8 +13,8 @@ JDK开发版本: 8
 
 #### 如何获得插件jar本体?
 
-1.通过Gitee右侧的发行版即可下载
-2.或者自行进行artificial build(构建)
+1. 通过Gitee右侧的发行版即可下载
+2. 或者自行进行artificial build(构建)
 
 
 #### 安装教程
