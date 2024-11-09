@@ -1,7 +1,6 @@
 # Minecraft Server Fixscrolls 插件
 
 #### 介绍
-
 这是一个1.12.2 Minecraft插件 支持Mod物品修复的修复卷轴,超级好用
 JDK开发版本: 8
 
