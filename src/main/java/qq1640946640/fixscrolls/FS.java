@@ -25,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class FS extends JavaPlugin implements Listener {  // 定义FS类，继承JavaPlugin类并实现Listener接口
     static FS instance;  // 静态变量instance
     Map<Integer, Short> supportedIDs;  // 存储支持的物品ID
+    java.util.Set<Integer> supportedIDsSet;  // 用于快速查找的物品ID集合
     String itemName;  // 物品名称
     Integer threshold;  // 阈值
     String key;  // 关键字
@@ -32,7 +33,7 @@ public class FS extends JavaPlugin implements Listener {  // 定义FS类，继�
     public void onEnable() {  // 插件启用时执行的方法
         instance = this;
         loadFiles();
-        (new checkTask()).runTaskTimerAsynchronously((Plugin)this, 0L, 100L);
+        (new checkTask()).runTaskTimerAsynchronously((Plugin)this, 0L, 200L);
     }
 
     private void loadFiles() {  // 加载配置文件等操作的方法
@@ -43,12 +44,14 @@ public class FS extends JavaPlugin implements Listener {  // 定义FS类，继�
         reloadConfig();
 
         this.supportedIDs = new ConcurrentHashMap<>();
+        this.supportedIDsSet = java.util.concurrent.ConcurrentHashMap.newKeySet();
         getConfig().getIntegerList("ids").forEach(i -> {
             Material material = Material.getMaterial(i.intValue());
             if (material == null) {
                 getLogger().warning("无法加载物品id: " + i);
             } else {
                 this.supportedIDs.put(i, Short.valueOf(material.getMaxDurability()));
+                this.supportedIDsSet.add(i);
             }
         });
         System.gc();

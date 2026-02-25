@@ -31,4 +31,16 @@ class SyncItem extends BukkitRunnable {
             this.i.setType(this.d);
         }
     }
+    
+    public void setPlayer(Player p) {
+        this.pl = p;
+    }
+    
+    public void setItem(ItemStack item) {
+        this.i = item;
+    }
+    
+    public void setMaterial(Material dur) {
+        this.d = dur;
+    }
 }

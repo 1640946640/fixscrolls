@@ -5,4 +5,16 @@ author: Freak_64(qq1640946640)
 
 commands:
   fixscroll:
-    description: main access command to plugin
+    description: 修复卷轴插件的主命令
+    usage: /fixscroll <help|reload|give>
+    aliases: [fs, 修复卷轴]
+    permission: fixscrolls.admin
+    permission-message: 你需要OP权限才能使用本指令
+    subcommands:
+      help:
+        description: 显示插件帮助信息
+      reload:
+        description: 重载插件配置
+      give:
+        description: 给玩家一个指定耐久的修复卷轴
+        usage: /fixscroll give <玩家> <耐久>

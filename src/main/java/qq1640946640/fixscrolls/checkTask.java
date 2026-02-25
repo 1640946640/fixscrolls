@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 class checkTask extends BukkitRunnable {
     /*该部分代码实现的功能是检查在线玩家的物品，根据一定规则修复损坏的物品。*/
     public void run() {
+        long startTime = System.currentTimeMillis();
         //初始化设置
         List<ItemStack> repairItems = new ArrayList<>();
         ItemStack repairStone = null;
@@ -40,7 +41,7 @@ class checkTask extends BukkitRunnable {
                 ItemStack item = arrayOfItemStack1[b1];
                 if (item != null) {
                     //如果物品在支持修复的物品列表中，则加入修复物品列表
-                    if (FS.instance.supportedIDs.containsKey(Integer.valueOf(item.getTypeId()))) {
+                    if (FS.instance.supportedIDsSet.contains(Integer.valueOf(item.getTypeId()))) {
                         repairItems.add(item);
                         //如果修复石为空且物品有元数据（lore），则检查元数据中是否包含特定关键字和值，如果是则将修复石设为该物品。
                     } else if (repairStone == null && item.hasItemMeta()) {
@@ -51,12 +52,15 @@ class checkTask extends BukkitRunnable {
                             //判断物品的lore是否有修复卷轴判断的关键字%dur%
                             if (lore != null) {
                                 for (String str : lore) {
-                                    if (str != null && ChatColor.stripColor(str).contains(FS.instance.key)) {
-                                        try {
-                                            max = Integer.valueOf(ChatColor.stripColor(str).replace(FS.instance.key, "")).intValue();
-                                            repairStone = item;
-                                        } catch (Exception e) {
-                                            continue;
+                                    if (str != null) {
+                                        String strippedStr = ChatColor.stripColor(str);
+                                        if (strippedStr.contains(FS.instance.key)) {
+                                            try {
+                                                max = Integer.valueOf(strippedStr.replace(FS.instance.key, "")).intValue();
+                                                repairStone = item;
+                                            } catch (Exception e) {
+                                                continue;
+                                            }
                                         }
                                     }
                                 }
@@ -99,7 +103,9 @@ class checkTask extends BukkitRunnable {
                         //损耗小于0时,直接跳出循环
                         break;
                     }
-                    (new SyncData(rep, (short)(rep.getDurability() - dmg))).runTask((Plugin)FS.instance);
+                    SyncData syncData = RunnablePool.getSyncData(rep, (short)(rep.getDurability() - dmg));
+                        syncData.runTask((Plugin)FS.instance);
+                        RunnablePool.releaseSyncData(syncData);
                 }
             }
             if (consume > 0) {
@@ -109,20 +115,29 @@ class checkTask extends BukkitRunnable {
                     //查看是否有修复卷轴的lore内容关键字,然后对其进行更新
                     if (str.contains(FS.instance.key)) {
                         if (consume >= max) {
-                            (new SyncItem(p, repairStone, Material.AIR)).runTask((Plugin)FS.instance);
+                            SyncItem syncItem = RunnablePool.getSyncItem(p, repairStone, Material.AIR);
+                            syncItem.runTask((Plugin)FS.instance);
+                            RunnablePool.releaseSyncItem(syncItem);
                             break;
                         }
                         lores.remove(k);
-                        lores.add(k, str.replace(String.valueOf(max), String.valueOf(max - consume)));
+                        lores.add(k, str.replace(Integer.toString(max), Integer.toString(max - consume)));
                         ItemMeta m = repairStone.getItemMeta();
                         m.setLore(lores);
                         repairStone.setItemMeta(m); // 更新修复石的元数据
-                        (new SyncMeta(repairStone, m)).runTask((Plugin)FS.instance); // 更新修复石的元数据
+                        SyncMeta syncMeta = RunnablePool.getSyncMeta(repairStone, m);
+                        syncMeta.runTask((Plugin)FS.instance);
+                        RunnablePool.releaseSyncMeta(syncMeta); // 更新修复石的元数据
                         break;
                     }
                 }
             }
             b++;
+        }
+        long endTime = System.currentTimeMillis();
+        long executionTime = endTime - startTime;
+        if (executionTime > 50) {
+            FS.instance.getLogger().info("修复卷轴检查任务执行时间: " + executionTime + "ms");
         }
     }
 }

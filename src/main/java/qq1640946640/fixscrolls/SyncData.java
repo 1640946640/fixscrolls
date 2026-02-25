@@ -25,4 +25,12 @@ class SyncData extends BukkitRunnable {
     public void run() {
         this.i.setDurability(this.d);
     }
+    
+    public void setItem(ItemStack item) {
+        this.i = item;
+    }
+    
+    public void setDur(short dur) {
+        this.d = dur;
+    }
 }

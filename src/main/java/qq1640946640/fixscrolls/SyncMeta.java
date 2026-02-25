@@ -22,4 +22,12 @@ class SyncMeta extends BukkitRunnable {
     public void run() {
         this.i.setItemMeta(this.m);
     }
+    
+    public void setItem(ItemStack item) {
+        this.i = item;
+    }
+    
+    public void setMeta(ItemMeta meta) {
+        this.m = meta;
+    }
 }
